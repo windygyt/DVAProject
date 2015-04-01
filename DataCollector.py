@@ -9,13 +9,17 @@ from os import listdir
 import json
 import os
 
-publisher = xxxxxxxxx # replace with your own publisher id
-restaurant_file_folder = 'json/CobbCounty GA/'
-review_file_folder = 'json/CobbCounty GA reviews/'
+# Only change the following 2 param when query different county
+query_state = 'TN' # match zip-county.csv file
+query_county = 'Overton' # match zip-county.csv file
+
+
+publisher = xxxxxxx # replace with your own publisher id
+restaurant_file_folder = 'json/' + query_county + 'County ' + query_state + '/'
+review_file_folder = 'json/' + query_county + 'County ' + query_state + ' reviews/'
 query_size = 50 # 50 is the maximum
-query_state = 'GA' # match zip-county.csv file
-query_county = 'Cobb County' # match zip-county.csv file
-short_county_name = 'Cobb' # match counties file
+
+collect_data_online = True
 
 # Step1: using zip code searching for all restaurants and find their id
 # Example: https://api.citygridmedia.com/content/places/v2/search/where?type=restaurant&where=90045&publisher=xxxx
@@ -57,14 +61,15 @@ zips = RestaurantCollector.getZips(query_state, query_county)
 print zips
 # save all restaurants information to Json files according to their zip code
 # If interrupted, try restart from a certain zip code
-RestaurantCollector.queryAndSaveRestaurantsJsonFiles(zips, restaurant_file_folder, query_size, publisher)
+if collect_data_online:
+    RestaurantCollector.queryAndSaveRestaurantsJsonFiles(zips, restaurant_file_folder, query_size, publisher)
 
 conn = sqlite3.connect('dva.db')
 c = conn.cursor()
-# initDataBase(c) # call only when recreating the database from empty
+#initDataBase(c) # call only when recreating the database from empty
 
 # Parse the restaurants Json file and insert contents into db
-county_id = getCountyID(c, query_state, short_county_name)
+county_id = getCountyID(c, query_state, query_county)
 print('county id: ' + str(county_id))
 for file_name in listdir(restaurant_file_folder):
     with open(restaurant_file_folder + file_name) as json_file:
@@ -74,7 +79,8 @@ for file_name in listdir(restaurant_file_folder):
         print("Finish parsing " + file_name)
 
 # Gather the restaurant list and get reviews for each one, then save them to Json files
-ReviewCollector.queryAndSaveReviewJsonFiles(c, review_file_folder, county_id, query_size, publisher)
+if collect_data_online:
+    ReviewCollector.queryAndSaveReviewJsonFiles(c, review_file_folder, county_id, query_size, publisher)
 
 # Parse the reviews Json file and insert contents into db
 for file_name in listdir(review_file_folder):

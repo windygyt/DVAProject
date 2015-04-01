@@ -1,15 +1,18 @@
 import csv
 
 def createTables(c):
-    c.execute('create table restaurants (id INT PRIMARY KEY NOT NULL, name text, county_id integer,'\
-              'rating integer, review_count integer)')
-    c.execute('create table counties (id INT PRIMARY KEY NOT NULL, name text, state_id integer)')
+    c.execute('create table restaurants (id INT PRIMARY KEY NOT NULL, name text, county_id integer, '\
+              'rating integer, review_count integer, FOREIGN KEY(county_id) REFERENCES counties(id))')
+    c.execute('create table counties (id INT PRIMARY KEY NOT NULL, name text, state_id integer, '\
+              'FOREIGN KEY(state_id) REFERENCES states(id))')
     c.execute('create table states (id INT PRIMARY KEY NOT NULL, code text, name text)')
     c.execute('create table tags (id INT PRIMARY KEY NOT NULL, name text)')
     c.execute('create table restaurant_tag (restaurant_id integer, tag_id integer, '\
-              'UNIQUE(restaurant_id, tag_id) ON CONFLICT REPLACE)')
+              'UNIQUE(restaurant_id, tag_id) ON CONFLICT REPLACE, '\
+              'FOREIGN KEY(restaurant_id) REFERENCES restaurants(id), '\
+              'FOREIGN KEY(tag_id) REFERENCES tags(id))')
     c.execute('create table reviews (id TEXT PRIMARY KEY NOT NULL, restaurant_id integer,'\
-              'rating integer, date text)')
+              'rating integer, date text, FOREIGN KEY(restaurant_id) REFERENCES restaurants(id))')
 
 def buildCountiesTable(c):
     with open('counties.txt', 'rb') as csvfile:
