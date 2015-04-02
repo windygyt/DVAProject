@@ -97,8 +97,14 @@ for row in c.execute('select county_id, state, county_name, '\
                       'as population from year_2013 order by population desc limit 10'):
     all_queries.append(row)
 
+start = 1
+count = 0
 for row in all_queries:
+     if count < start:
+          count = count + 1
+          continue
      queryCounty(c, row[1], row[2])
+     
 
 conn.commit()
 conn.close()

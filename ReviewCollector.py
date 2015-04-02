@@ -25,6 +25,6 @@ def queryAndSaveReviewJsonFiles(c, dump_folder, county_id, query_size, publisher
         pages = int(math.ceil(float(row[1]) / query_size))
         for p in range(1, pages + 1):
             data = getReviewForRestaurant(row[0], p, query_size, publisher)
-            with open(('%s/%d-page%d.txt' % (dump_folder, row[0], p)), 'w') as outfile:
+            with open(('%s/%d-page%d.json' % (dump_folder, row[0], p)), 'w') as outfile:
                 json.dump(data, outfile)
             time.sleep(0.3)
