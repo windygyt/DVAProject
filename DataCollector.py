@@ -21,7 +21,7 @@ def initDataBase(c):
 
 def queryCounty(c, query_state,query_county):
 
-    publisher = xxxxx # replace with your own publisher id
+    publisher = xx # replace with your own publisher id
     restaurant_file_folder = 'json/' + query_county + 'County ' + query_state + '/'
     review_file_folder = 'json/' + query_county + 'County ' + query_state + ' reviews/'
     query_size = 50 # 50 is the maximum
@@ -94,12 +94,11 @@ c = conn.cursor()
 all_queries = []
 for row in c.execute('select county_id, state, county_name, '\
                       'Asian+African_American+White+American_Indian+Pacific_Islander '\
-                      'as population from year_2013 order by population desc'):
+                      'as population from year_2013 order by population desc limit 10'):
     all_queries.append(row)
 
 for row in all_queries:
-     id = SetupDataBase.getCountyID(c, row[1], row[2])
-queryCounty(c, 'Illinois','Henry')
+     queryCounty(c, row[1], row[2])
 
 conn.commit()
 conn.close()
