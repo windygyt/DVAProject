@@ -21,12 +21,12 @@ def initDataBase(c):
 
 def queryCounty(c, query_state,query_county):
 
-    publisher = 1 # replace with your own publisher id
+    publisher = xxxxx # replace with your own publisher id
     restaurant_file_folder = 'json/' + query_county + 'County ' + query_state + '/'
     review_file_folder = 'json/' + query_county + 'County ' + query_state + ' reviews/'
     query_size = 50 # 50 is the maximum
 
-    collect_data_online = False
+    collect_data_online = True
 
     # Step1: using zip code searching for all restaurants and find their id
     # Example: https://api.citygridmedia.com/content/places/v2/search/where?type=restaurant&where=90045&publisher=xxxx
@@ -49,7 +49,8 @@ def queryCounty(c, query_state,query_county):
         os.makedirs(review_file_folder)
 
 
-    zips = RestaurantCollector.getZips(query_state, query_county)
+    zips = SetupDataBase.getZips(c, query_state, query_county)
+    print "zips: "
     print zips
     # save all restaurants information to Json files according to their zip code
     # If interrupted, try restart from a certain zip code
@@ -89,19 +90,16 @@ query_county = 'Overton' # match zip-county.csv file
 conn = sqlite3.connect('dva.db')
 c = conn.cursor()
 #initDataBase(c)
-#c.execute('select county_id, Asian+African_American+White+American_Indian+Pacific_Islander as'\
-#          'population from year_2013 order by population desc;')
-#result = c.fetchone()
-#while result:
 
-# for row in c.execute('select a.code, b.name from states as a, counties as b where a.id = b.state_id;'):
-#
-#     state = row[0]
-#     county = row[1]
-#     zip = RestaurantCollector.getZips(state, county);
-#     if len(zip) == 0:
-#         print state + " " + county
+all_queries = []
+for row in c.execute('select county_id, state, county_name, '\
+                      'Asian+African_American+White+American_Indian+Pacific_Islander '\
+                      'as population from year_2013 order by population desc'):
+    all_queries.append(row)
 
+for row in all_queries:
+     id = SetupDataBase.getCountyID(c, row[1], row[2])
+queryCounty(c, 'Illinois','Henry')
 
 conn.commit()
 conn.close()

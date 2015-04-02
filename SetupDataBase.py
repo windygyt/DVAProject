@@ -44,7 +44,6 @@ def getStateID(c, state) :
         comm = 'SELECT id from states where code = \'%s\'' % state
     else:
         comm = 'SELECT id from states where name = \'%s\'' % state
-    print comm
     c.execute(comm)
     result = c.fetchone()
     if result:
@@ -100,6 +99,16 @@ def buildZipTable(c):
             county = row['County']
             county_id = getCountyID(c, state, county);
             comm = 'INSERT INTO zips VALUES (%d, %d)' % (int(row['Zip']), county_id)
+            print comm
+            c.execute(comm)
+
+def getZips(c, state, county):
+    county_id = getCountyID(c, state, county)
+    print county_id
+    zips = []
+    for row in c.execute('select zip from zips where county_id = %d' % county_id):
+        zips.append(row[0])
+    return zips
 
 def buildDemoTables(c):
     for year in [2010, 2011, 2012, 2013]:
