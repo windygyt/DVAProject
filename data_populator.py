@@ -4,7 +4,7 @@ tagsToExamine={}
 countyPrefScoreAllCuisines={}
 countyList=[]
 countyWisePopulation={}
-populationTable='year_2012'
+populationTable='year_2013'
 def getTags():
     tagDict={}
     with open('tag_code_mapping.csv', 'rb') as csvfile:
@@ -78,19 +78,23 @@ def populateDb():
 def getCuisineString():
     createAttr=''
     for cuisine in tagsToExamine:
-        createAttr+=tagsToExamine[cuisine]+"_"+cuisine+' float,'
+        createAttr+='popularity_'+tagsToExamine[cuisine]+"_"+cuisine+' float,'
     return createAttr
 
 
 conn = sqlite3.connect('dva.db')
 c = conn.cursor()
 tagsToExamine=getTags()
+try:
+    c.execute('drop table training_data')
+except sqlite3.OperationalError:
+    pass
 c.execute('create table training_data (county_id int primary key not null, asian float, african_american float, '\
     'white float, american_indian float, pacific_islander float,'+getCuisineString()+' foreign key(county_id) references counties(id))')
 getAverageCuisinePopularity()
 getPopulationRepresentation()
 populateDb()
-print countyPrefScoreAllCuisines
+# print countyPrefScoreAllCuisines
 conn.commit()
 conn.close()
 # print tagsToExamine
