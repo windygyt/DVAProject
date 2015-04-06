@@ -78,7 +78,7 @@ def populateDb():
 def getCuisineString():
     createAttr=''
     for cuisine in tagsToExamine:
-        createAttr+='tag'+cuisine+' float,'
+        createAttr+=tagsToExamine[cuisine]+"_"+cuisine+' float,'
     return createAttr
 
 
